@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>道歉信</title>
+    <title>别生气啦</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -11,6 +11,7 @@
             padding: 0;
             box-sizing: border-box;
             user-select: none;
+            -webkit-tap-highlight-color: transparent; /* 去掉移动端点击灰块 */
         }
 
         body {
@@ -22,6 +23,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             padding: 16px;
             margin: 0;
+            touch-action: pan-y; /* 允许垂直滑动，不影响按钮点击 */
         }
 
         .card-stack {
@@ -49,12 +51,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: box-shadow 0.3s ease, transform 0.2s ease;
+            transition: box-shadow 0.3s ease;
             border: 1px solid rgba(255,255,240,0.6);
-        }
-
-        .apple-card:hover {
-            box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255,255,240,0.8) inset;
         }
 
         #card1 { display: flex; }
@@ -95,6 +93,7 @@
             display: block;
             transition: opacity 0.25s ease;
             background: #f3eee8;
+            pointer-events: none;
         }
 
         .card-title {
@@ -142,6 +141,7 @@
             flex-shrink: 0;
             will-change: transform;
             border: 0.5px solid rgba(255,250,240,0.9);
+            touch-action: manipulation; /* 关键：优化移动端点击，禁止双击缩放 */
         }
 
         .apple-btn:active {
@@ -153,7 +153,6 @@
         #yesBtn {
             background: rgba(239, 100, 202, 0.8);
             color: #f5ede8;
-            box-shadow: 0 8px 18px -6px rgba(210, 140, 70, 0.2), 0 0 0 1px #fff3e0 inset;
             z-index: 3;
             position: relative;
         }
@@ -169,10 +168,6 @@
             display: none;
         }
 
-        #card2 .image-container {
-            margin-top: 8px;
-        }
-
         .hint-note {
             font-size: 14px;
             color: #a28b7a;
@@ -180,17 +175,9 @@
             opacity: 0.7;
         }
 
-        .apple-card {
-            overflow: visible;
-        }
-
         #yesBtn, #noBtn {
             transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.1), 
                         background 0.2s, box-shadow 0.2s;
-        }
-
-        .apology-img {
-            transition: opacity 0.2s;
         }
 
         .card-sub {
@@ -224,16 +211,17 @@
             <button class="apple-btn" id="yesBtn">可以</button>
             <button class="apple-btn" id="noBtn">不可以</button>
         </div>
+
     </div>
 
     <!-- 卡片 2 : 原谅后 -->
     <div id="card2" class="apple-card">
         <div class="media-wrapper" id="mediaWrapper2">
             <div class="image-container">
-                <img id="thankyouImage" class="apology-img" src="OIP-C5.jpg" alt="开心小猫">
+                <img id="thankyouImage" class="apology-img" src="OIP-C5.jpg" alt="开心猫咪">
             </div>
             <div class="card-title thankyou-title">谢谢你</div>
-            <div class="card-sub">我下次不敢了</div>
+
         </div>
         <div style="margin-top: 30px; opacity: 0.6;">
             <i class="fa-regular fa-heart" style="color: #d9a38c;"></i>
@@ -255,26 +243,19 @@
         const apologyImg = document.getElementById('apologyImage');
         const thankyouImg = document.getElementById('thankyouImage');
 
-        // ★★★ 在这里填入你准备好的 JPG 照片链接 ★★★
-        // 伤心照片数组 (点击「不可以」时依次切换)
+        // ★★★ 自定义照片数组（可替换为自己的 JPG 链接） ★★★
         const sadImages = [
-            "OIP-C.jpg",   // 委屈小猫1
-            "下载3.jpg",     // 伤心小猫2
-            "OIP-C1.jpg",     // 委屈小狗
-            "OIP-C4.jpg"      // 难过兔兔
+            "OIP-C.jpg",
+            "OIP-C1.jpg",
+            "下载3.jpg",
+            "OIP-C4.jpg"
         ];
 
-        // 开心照片 (点击「可以」后显示)
-        const happyImage = "OIP-C5.jpg";  // 开心猫咪
+        const happyImage = "OIP-C5.jpg"; // 开心照片（原谅后显示）
 
-        // 你也可以把上面的链接全部替换成自己的 JPG 图片地址 (本地路径或在线链接)
-        // 例如: "images/sad1.jpg", "images/sad2.jpg" ...
-
-        // 设置初始伤心图片 (第一张)
+        // 初始化显示第一张伤心图
         let currentSadIndex = 0;
         apologyImg.src = sadImages[0];
-
-        // 预置开心图片
         thankyouImg.src = happyImage;
 
         // ----- 状态变量 (放大/移动) -----
@@ -290,19 +271,20 @@
         const TRANSLATE_X_STEP = 16;
         const TRANSLATE_Y_STEP = 10;
 
-        // 应用变换
         function applyTransformations() {
             yesBtn.style.transform = `scale(${currentScale})`;
             noBtn.style.transform = `translateX(${currentNoTranslateX}px)`;
             mediaWrapper.style.transform = `translateY(-${currentMediaTranslateY}px)`;
         }
 
-        // ----- 点击「不可以」: 切换下一张伤心图片 + 放大/移动 -----
-        function handleNoClick() {
-            // 1. 切换到下一张伤心图片
+        // ----- 点击「不可以」: 切换图片 + 动态效果 -----
+        function handleNoClick(event) {
+            // 防止任何默认行为（如页面缩放等），但已通过 CSS touch-action 控制
+            event.preventDefault(); 
+            
+            // 1. 切换伤心图片
             if (sadImages.length > 0) {
                 currentSadIndex = (currentSadIndex + 1) % sadImages.length;
-                // 淡入淡出效果
                 apologyImg.style.opacity = '0.5';
                 setTimeout(() => {
                     apologyImg.src = sadImages[currentSadIndex];
@@ -328,32 +310,25 @@
             applyTransformations();
         }
 
-        // ----- 点击「可以」: 切换到原谅卡片 (并显示开心照片) -----
+        // ----- 点击「可以」: 切换到原谅卡片 -----
         function handleYesClick() {
-            // 确保开心照片是最新的 (如果用户中途修改过变量，已生效)
             thankyouImg.src = happyImage;
-            
-            // 切换卡片
             card1.style.display = 'none';
             card2.style.display = 'flex';
         }
 
-        // ----- 绑定事件 -----
+        // ----- 绑定事件（仅使用 click，移动端完美支持）-----
         yesBtn.addEventListener('click', handleYesClick);
         noBtn.addEventListener('click', handleNoClick);
 
-        // 触摸优化
-        noBtn.addEventListener('touchstart', (e) => { 
-            e.preventDefault(); 
-        }, { passive: false });
-
-        // 禁止右键菜单
+        // 移除之前的 touchstart 干扰代码，改用 CSS touch-action 优化触摸体验
+        // 同时为了彻底避免移动端长按菜单，添加 contextmenu 阻止
         document.querySelectorAll('button').forEach(btn => {
             btn.addEventListener('contextmenu', (e) => e.preventDefault());
         });
 
-        // 可选: 如果想在卡片2也点击图片换开心照? 不需要, 已经固定.
-        // 所有图片替换只需修改上面的 sadImages 和 happyImage 变量即可.
+        // 可选：如果希望在移动端点击时有更快的响应，可以添加一个空 touchstart 但不做 preventDefault
+        // 但 click 已经足够，且加上 touch-action: manipulation 后响应很快。
     })();
 </script>
 </body>
