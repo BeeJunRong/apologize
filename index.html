@@ -11,7 +11,7 @@
             padding: 0;
             box-sizing: border-box;
             user-select: none;
-            -webkit-tap-highlight-color: transparent; /* 去掉移动端点击灰块 */
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -23,7 +23,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             padding: 16px;
             margin: 0;
-            touch-action: pan-y; /* 允许垂直滑动，不影响按钮点击 */
+            touch-action: pan-y;
         }
 
         .card-stack {
@@ -53,10 +53,38 @@
             align-items: center;
             transition: box-shadow 0.3s ease;
             border: 1px solid rgba(255,255,240,0.6);
+            position: relative;
         }
 
         #card1 { display: flex; }
         #card2 { display: none; }
+
+        /* 音乐开关 */
+        .music-toggle {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            width: 42px;
+            height: 42px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            color: #6b4f3a;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(255,255,255,0.8) inset;
+            transition: all 0.2s ease;
+        }
+
+        .music-toggle:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: scale(1.05);
+        }
 
         .media-wrapper {
             display: flex;
@@ -141,7 +169,7 @@
             flex-shrink: 0;
             will-change: transform;
             border: 0.5px solid rgba(255,250,240,0.9);
-            touch-action: manipulation; /* 关键：优化移动端点击，禁止双击缩放 */
+            touch-action: manipulation;
         }
 
         .apple-btn:active {
@@ -193,13 +221,28 @@
             .card-title {
                 font-size: 26px;
             }
+            .music-toggle {
+                top: 12px;
+                right: 12px;
+                width: 38px;
+                height: 38px;
+                font-size: 18px;
+            }
         }
     </style>
 </head>
 <body>
+
+<!-- 背景音乐 (请替换为自己的音乐文件) -->
+<audio id="bgMusic" src="April Encounter - 很美味想在一个美好的晚上 写这一首歌来给你唱动态歌词Pinyin Lyrics.mp3" loop preload="auto"></audio>
+
 <div class="card-stack">
     <!-- 卡片 1 : 道歉请求 -->
     <div id="card1" class="apple-card">
+        <div class="music-toggle" id="musicToggle" title="音乐开关">
+            <i class="fas fa-music"></i>
+        </div>
+
         <div class="media-wrapper" id="mediaWrapper1">
             <div class="image-container">
                 <img id="apologyImage" class="apology-img" src="OIP-C.jpg" alt="委屈小猫">
@@ -211,17 +254,20 @@
             <button class="apple-btn" id="yesBtn">可以</button>
             <button class="apple-btn" id="noBtn">不可以</button>
         </div>
-
     </div>
 
     <!-- 卡片 2 : 原谅后 -->
     <div id="card2" class="apple-card">
+        <div class="music-toggle" id="musicToggle2" title="音乐开关">
+            <i class="fas fa-music"></i>
+        </div>
+
         <div class="media-wrapper" id="mediaWrapper2">
             <div class="image-container">
                 <img id="thankyouImage" class="apology-img" src="OIP-C5.jpg" alt="开心猫咪">
             </div>
-            <div class="card-title thankyou-title">谢谢你</div>
-
+            <div class="card-title thankyou-title">谢谢你😊</div>
+            <div class="card-sub">我下次不敢了</div>
         </div>
         <div style="margin-top: 30px; opacity: 0.6;">
             <i class="fa-regular fa-heart" style="color: #d9a38c;"></i>
@@ -233,7 +279,7 @@
     (function(){
         "use strict";
 
-        // ----- 获取元素 -----
+        // ----- 元素 -----
         const card1 = document.getElementById('card1');
         const card2 = document.getElementById('card2');
         const yesBtn = document.getElementById('yesBtn');
@@ -243,22 +289,80 @@
         const apologyImg = document.getElementById('apologyImage');
         const thankyouImg = document.getElementById('thankyouImage');
 
-        // ★★★ 自定义照片数组（可替换为自己的 JPG 链接） ★★★
+        // 音乐元素
+        const bgMusic = document.getElementById('bgMusic');
+        const musicToggle = document.getElementById('musicToggle');
+        const musicToggle2 = document.getElementById('musicToggle2');
+        
+        let musicPlaying = false; // 当前播放状态
+
+        // 更新所有音乐开关图标
+        function updateMusicIcon() {
+            const iconClass = musicPlaying ? 'fa-volume-up' : 'fa-music';
+            musicToggle.innerHTML = `<i class="fas ${iconClass}"></i>`;
+            if (musicToggle2) {
+                musicToggle2.innerHTML = `<i class="fas ${iconClass}"></i>`;
+            }
+        }
+
+        // 切换音乐播放/暂停（修复版）
+        function toggleMusic() {
+            if (musicPlaying) {
+                bgMusic.pause();
+                musicPlaying = false;
+            } else {
+                // 播放可能返回Promise，处理异常但不中断状态更新
+                bgMusic.play().then(() => {
+                    musicPlaying = true;
+                    updateMusicIcon();
+                }).catch(err => {
+                    console.warn('播放失败:', err);
+                    // 即使失败也不改变musicPlaying状态（保持false）
+                });
+            }
+            // 无论播放还是暂停，立即更新图标（暂停时不需要等待Promise）
+            updateMusicIcon();
+        }
+
+        // 尝试自动播放（用户首次交互时调用）
+        function tryAutoPlayMusic() {
+            if (!musicPlaying) {
+                bgMusic.play().then(() => {
+                    musicPlaying = true;
+                    updateMusicIcon();
+                }).catch(() => {});
+            }
+        }
+
+        // 绑定音乐开关点击事件（确保只绑定一次）
+        musicToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMusic();
+        });
+        if (musicToggle2) {
+            musicToggle2.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleMusic();
+            });
+        }
+
+        // 初始化图标
+        updateMusicIcon();
+
+        // ----- 自定义照片数组 -----
         const sadImages = [
             "OIP-C.jpg",
             "OIP-C1.jpg",
             "下载3.jpg",
             "OIP-C4.jpg"
         ];
+        const happyImage = "OIP-C5.jpg";
 
-        const happyImage = "OIP-C5.jpg"; // 开心照片（原谅后显示）
-
-        // 初始化显示第一张伤心图
         let currentSadIndex = 0;
         apologyImg.src = sadImages[0];
         thankyouImg.src = happyImage;
 
-        // ----- 状态变量 (放大/移动) -----
+        // ----- 动态效果变量 -----
         let currentScale = 1.0;
         let currentNoTranslateX = 0;
         let currentMediaTranslateY = 0;
@@ -277,12 +381,12 @@
             mediaWrapper.style.transform = `translateY(-${currentMediaTranslateY}px)`;
         }
 
-        // ----- 点击「不可以」: 切换图片 + 动态效果 -----
+        // ----- 点击「不可以」 -----
         function handleNoClick(event) {
-            // 防止任何默认行为（如页面缩放等），但已通过 CSS touch-action 控制
-            event.preventDefault(); 
-            
-            // 1. 切换伤心图片
+            event.preventDefault();
+            tryAutoPlayMusic();  // 用户交互时尝试播放
+
+            // 切换伤心图片
             if (sadImages.length > 0) {
                 currentSadIndex = (currentSadIndex + 1) % sadImages.length;
                 apologyImg.style.opacity = '0.5';
@@ -292,43 +396,34 @@
                 }, 60);
             }
             
-            // 2. 放大「可以」按钮
             if (currentScale < MAX_SCALE) {
                 currentScale = Math.min(currentScale + SCALE_STEP, MAX_SCALE);
             }
-            
-            // 3. 「不可以」按钮右移
             if (currentNoTranslateX < MAX_NO_TRANSLATE) {
                 currentNoTranslateX = Math.min(currentNoTranslateX + TRANSLATE_X_STEP, MAX_NO_TRANSLATE);
             }
-            
-            // 4. 图片/标题上移
             if (currentMediaTranslateY < MAX_MEDIA_UP) {
                 currentMediaTranslateY = Math.min(currentMediaTranslateY + TRANSLATE_Y_STEP, MAX_MEDIA_UP);
             }
-            
             applyTransformations();
         }
 
-        // ----- 点击「可以」: 切换到原谅卡片 -----
+        // ----- 点击「可以」 -----
         function handleYesClick() {
+            tryAutoPlayMusic();
             thankyouImg.src = happyImage;
             card1.style.display = 'none';
             card2.style.display = 'flex';
         }
 
-        // ----- 绑定事件（仅使用 click，移动端完美支持）-----
+        // 绑定按钮事件
         yesBtn.addEventListener('click', handleYesClick);
         noBtn.addEventListener('click', handleNoClick);
 
-        // 移除之前的 touchstart 干扰代码，改用 CSS touch-action 优化触摸体验
-        // 同时为了彻底避免移动端长按菜单，添加 contextmenu 阻止
+        // 禁止长按菜单
         document.querySelectorAll('button').forEach(btn => {
             btn.addEventListener('contextmenu', (e) => e.preventDefault());
         });
-
-        // 可选：如果希望在移动端点击时有更快的响应，可以添加一个空 touchstart 但不做 preventDefault
-        // 但 click 已经足够，且加上 touch-action: manipulation 后响应很快。
     })();
 </script>
 </body>
