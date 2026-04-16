@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>道歉信</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #f9f1e0 0%, #f5e6d3 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 16px;
+            margin: 0;
+        }
+
+        .card-stack {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            height: 560px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .apple-card {
+            width: 100%;
+            max-width: 380px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border-radius: 36px;
+            box-shadow: 
+                0 25px 50px -8px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+                0 8px 20px rgba(0, 0, 0, 0.05);
+            padding: 28px 24px 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: box-shadow 0.3s ease, transform 0.2s ease;
+            border: 1px solid rgba(255,255,240,0.6);
+        }
+
+        .apple-card:hover {
+            box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255,255,240,0.8) inset;
+        }
+
+        #card1 { display: flex; }
+        #card2 { display: none; }
+
+        .media-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
+            will-change: transform;
+            margin-bottom: 8px;
+        }
+
+        .image-container {
+            width: 140px;
+            height: 140px;
+            border-radius: 30px;
+            background: rgba(240, 235, 225, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 20px -8px rgba(0,0,0,0.1), 0 0 0 1px rgba(255,255,255,0.7) inset;
+            margin-bottom: 18px;
+            overflow: hidden;
+            padding: 8px;
+        }
+
+        .apology-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 24px;
+            display: block;
+            transition: opacity 0.25s ease;
+            background: #f3eee8;
+        }
+
+        .card-title {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #3d2e24;
+            text-shadow: 0 2px 4px rgba(255,255,240,0.8);
+            margin-bottom: 8px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .thankyou-title {
+            font-size: 26px;
+            font-weight: 590;
+        }
+
+        .button-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 16px;
+            width: 100%;
+            position: relative;
+        }
+
+        .apple-btn {
+            border: none;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 14px 28px;
+            border-radius: 60px;
+            font-size: 18px;
+            font-weight: 590;
+            color: #2c241e;
+            box-shadow: 0 8px 16px -6px rgba(0,0,0,0.1), 0 0 0 1px rgba(255,255,255,0.8) inset;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 110px;
+            text-align: center;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+            will-change: transform;
+            border: 0.5px solid rgba(255,250,240,0.9);
+        }
+
+        .apple-btn:active {
+            transform: scale(0.96);
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 4px 8px -4px rgba(0,0,0,0.1), 0 0 0 1px #fff inset;
+        }
+
+        #yesBtn {
+            background: rgba(239, 100, 202, 0.8);
+            color: #f5ede8;
+            box-shadow: 0 8px 18px -6px rgba(210, 140, 70, 0.2), 0 0 0 1px #fff3e0 inset;
+            z-index: 3;
+            position: relative;
+        }
+
+        #noBtn {
+            background: rgba(186, 183, 181, 0.8);
+            color: #f2ece7;
+            z-index: 2;
+            position: relative;
+        }
+
+        #card2 .button-group {
+            display: none;
+        }
+
+        #card2 .image-container {
+            margin-top: 8px;
+        }
+
+        .hint-note {
+            font-size: 14px;
+            color: #a28b7a;
+            margin-top: 12px;
+            opacity: 0.7;
+        }
+
+        .apple-card {
+            overflow: visible;
+        }
+
+        #yesBtn, #noBtn {
+            transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.1), 
+                        background 0.2s, box-shadow 0.2s;
+        }
+
+        .apology-img {
+            transition: opacity 0.2s;
+        }
+
+        .card-sub {
+            font-size: 16px;
+            color: #7f6e60;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 420px) {
+            .apple-card {
+                padding: 22px 18px 28px;
+            }
+            .card-title {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="card-stack">
+    <!-- 卡片 1 : 道歉请求 -->
+    <div id="card1" class="apple-card">
+        <div class="media-wrapper" id="mediaWrapper1">
+            <div class="image-container">
+                <img id="apologyImage" class="apology-img" src="images/OIP-C.jpg" alt="委屈小猫">
+            </div>
+            <div class="card-title" id="cardTitle">不要生气我啦</div>
+        </div>
+
+        <div class="button-group">
+            <button class="apple-btn" id="yesBtn">可以</button>
+            <button class="apple-btn" id="noBtn">不可以</button>
+        </div>
+    </div>
+
+    <!-- 卡片 2 : 原谅后 -->
+    <div id="card2" class="apple-card">
+        <div class="media-wrapper" id="mediaWrapper2">
+            <div class="image-container">
+                <img id="thankyouImage" class="apology-img" src="images/OIP-C5.jpg" alt="开心小猫">
+            </div>
+            <div class="card-title thankyou-title">谢谢你</div>
+            <div class="card-sub">我下次不敢了</div>
+        </div>
+        <div style="margin-top: 30px; opacity: 0.6;">
+            <i class="fa-regular fa-heart" style="color: #d9a38c;"></i>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        "use strict";
+
+        // ----- 获取元素 -----
+        const card1 = document.getElementById('card1');
+        const card2 = document.getElementById('card2');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        
+        const mediaWrapper = document.getElementById('mediaWrapper1');
+        const apologyImg = document.getElementById('apologyImage');
+        const thankyouImg = document.getElementById('thankyouImage');
+
+        // ★★★ 在这里填入你准备好的 JPG 照片链接 ★★★
+        // 伤心照片数组 (点击「不可以」时依次切换)
+        const sadImages = [
+            "images/OIP-C.jpg",   // 委屈小猫1
+            "images/下载3.jpg",     // 伤心小猫2
+            "images/OIP-C1.jpg",     // 委屈小狗
+            "images/OIP-C4.jpg"      // 难过兔兔
+        ];
+
+        // 开心照片 (点击「可以」后显示)
+        const happyImage = "images/OIP-C5.jpg";  // 开心猫咪
+
+        // 你也可以把上面的链接全部替换成自己的 JPG 图片地址 (本地路径或在线链接)
+        // 例如: "images/sad1.jpg", "images/sad2.jpg" ...
+
+        // 设置初始伤心图片 (第一张)
+        let currentSadIndex = 0;
+        apologyImg.src = sadImages[0];
+
+        // 预置开心图片
+        thankyouImg.src = happyImage;
+
+        // ----- 状态变量 (放大/移动) -----
+        let currentScale = 1.0;
+        let currentNoTranslateX = 0;
+        let currentMediaTranslateY = 0;
+        
+        const MAX_SCALE = 2.9;
+        const MAX_NO_TRANSLATE = 110;
+        const MAX_MEDIA_UP = 58;
+        
+        const SCALE_STEP = 0.28;
+        const TRANSLATE_X_STEP = 16;
+        const TRANSLATE_Y_STEP = 10;
+
+        // 应用变换
+        function applyTransformations() {
+            yesBtn.style.transform = `scale(${currentScale})`;
+            noBtn.style.transform = `translateX(${currentNoTranslateX}px)`;
+            mediaWrapper.style.transform = `translateY(-${currentMediaTranslateY}px)`;
+        }
+
+        // ----- 点击「不可以」: 切换下一张伤心图片 + 放大/移动 -----
+        function handleNoClick() {
+            // 1. 切换到下一张伤心图片
+            if (sadImages.length > 0) {
+                currentSadIndex = (currentSadIndex + 1) % sadImages.length;
+                // 淡入淡出效果
+                apologyImg.style.opacity = '0.5';
+                setTimeout(() => {
+                    apologyImg.src = sadImages[currentSadIndex];
+                    apologyImg.style.opacity = '1';
+                }, 60);
+            }
+            
+            // 2. 放大「可以」按钮
+            if (currentScale < MAX_SCALE) {
+                currentScale = Math.min(currentScale + SCALE_STEP, MAX_SCALE);
+            }
+            
+            // 3. 「不可以」按钮右移
+            if (currentNoTranslateX < MAX_NO_TRANSLATE) {
+                currentNoTranslateX = Math.min(currentNoTranslateX + TRANSLATE_X_STEP, MAX_NO_TRANSLATE);
+            }
+            
+            // 4. 图片/标题上移
+            if (currentMediaTranslateY < MAX_MEDIA_UP) {
+                currentMediaTranslateY = Math.min(currentMediaTranslateY + TRANSLATE_Y_STEP, MAX_MEDIA_UP);
+            }
+            
+            applyTransformations();
+        }
+
+        // ----- 点击「可以」: 切换到原谅卡片 (并显示开心照片) -----
+        function handleYesClick() {
+            // 确保开心照片是最新的 (如果用户中途修改过变量，已生效)
+            thankyouImg.src = happyImage;
+            
+            // 切换卡片
+            card1.style.display = 'none';
+            card2.style.display = 'flex';
+        }
+
+        // ----- 绑定事件 -----
+        yesBtn.addEventListener('click', handleYesClick);
+        noBtn.addEventListener('click', handleNoClick);
+
+        // 触摸优化
+        noBtn.addEventListener('touchstart', (e) => { 
+            e.preventDefault(); 
+        }, { passive: false });
+
+        // 禁止右键菜单
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('contextmenu', (e) => e.preventDefault());
+        });
+
+        // 可选: 如果想在卡片2也点击图片换开心照? 不需要, 已经固定.
+        // 所有图片替换只需修改上面的 sadImages 和 happyImage 变量即可.
+    })();
+</script>
+</body>
+</html>
